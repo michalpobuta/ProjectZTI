@@ -4,17 +4,20 @@ FROM amazoncorretto:21
 # Add Maintainer Info
 LABEL maintainer="michalpobuta@student.agh.edu.pl"
 
-# Add a volume pointing to /tmp
-VOLUME /tmp
+# Ustawiamy zmienną środowiskową dla katalogu aplikacji
+ENV APP_HOME /app
 
-# Make port 8080 available to the world outside this container
+# Tworzymy katalog aplikacji
+RUN mkdir -p $APP_HOME
+
+# Ustawiamy katalog roboczy
+WORKDIR $APP_HOME
+
+# Kopiujemy plik JAR do katalogu aplikacji
+COPY target/*.jar app.jar
+
+# Ustawiamy port, na którym aplikacja będzie działać
 EXPOSE 8080
 
-# The application's jar file
-ARG JAR_FILE=target/Project-0.0.1-SNAPSHOT.jar
-
-# Add the application's jar to the container
-ADD ${JAR_FILE} app.jar
-
-# Run the jar file
-ENTRYPOINT ["java","-jar","/app.jar"]
+# Uruchamiamy aplikację
+ENTRYPOINT ["java", "-jar", "app.jar"]

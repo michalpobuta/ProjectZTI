@@ -7,12 +7,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/photos")
 public class PhotoController {
 
     @Autowired
     private PhotoService photoService;
+
+    @GetMapping
+    public List<Photo> getAllPhotos() {
+        return photoService.getAllPhotos();
+    }
 
     @PostMapping
     public ResponseEntity<Photo> addPhoto(@RequestBody Photo photo) {
