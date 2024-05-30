@@ -9,9 +9,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.context.ApplicationContext;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -33,11 +35,16 @@ class UserServiceTest {
     private AuthenticationManager authenticationManager;
 
     @Mock
+    private ApplicationContext applicationContext;
+
+    @Mock
     private JwtUtil jwtUtil;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        when(applicationContext.getBean(AuthenticationManager.class)).thenReturn(authenticationManager);
+
     }
 
     @Test
@@ -61,12 +68,19 @@ class UserServiceTest {
         String username = "testuser";
         String password = "password";
 
+        // Mock the authentication process
         Authentication authentication = mock(Authentication.class);
-        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(authentication);
-        when(jwtUtil.generateToken(any())).thenReturn("token");
+        UserDetails userDetails = mock(UserDetails.class);
+        when(authentication.getPrincipal()).thenReturn(userDetails);
 
+        // Configure mocks
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(authentication);
+        when(jwtUtil.generateToken(any(UserDetails.class))).thenReturn("token");
+
+        // Call the login method
         String token = userService.loginUser(username, password);
 
+        // Assertions
         assertNotNull(token);
         assertEquals("token", token);
     }
