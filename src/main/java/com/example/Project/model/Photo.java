@@ -17,4 +17,5 @@ public class Photo {
     private List<String> tags;
     private List<String> likes = new ArrayList<>();
     private List<Comment> comments = new ArrayList<>();
+    private byte[] imageData;
 }
